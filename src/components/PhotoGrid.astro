@@ -1,0 +1,336 @@
+---
+import { getImages } from '../utils/images';
+import OptimizedImage from './OptimizedImage.astro';
+
+const images = await getImages();
+const positions = ['left', 'center', 'right'];
+const sizes = ['small', 'medium', 'large'];
+
+const enhancedImages = images.map((image, index) => ({
+  ...image,
+  position: positions[index % positions.length],
+  size: index === 0 ? 'hero' : sizes[Math.floor(Math.random() * sizes.length)]
+}));
+---
+
+<div class="photo-grid">
+  {enhancedImages.map((image, index) => (
+    <div class={`photo-section ${image.position} ${index === 0 ? 'hero-section' : ''}`}>
+      <div class={`photo-item ${image.size}`} data-image-id={index}>
+        {index === 0 && <div class="hero-overlay"></div>}
+        <OptimizedImage
+          src={image.src}
+          alt={image.alt}
+          loading={index === 0 ? 'eager' : 'lazy'}
+        />
+        {index === 0 && <h1 class="hero-title">looking for Hopper</h1>}
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .photo-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 25vh;
+    padding: 0 0 25vh 0;
+  }
+
+  .hero-section {
+    min-height: 100vh !important;
+    padding: 0 !important;
+    margin: 0;
+  }
+
+  .hero-section .photo-item {
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: none !important;
+  }
+
+  .hero-section .photo-item img {
+    object-fit: cover !important;
+  }
+
+  .photo-section {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  .left { justify-content: flex-start; }
+  .center { justify-content: center; }
+  .right { justify-content: flex-end; }
+
+  .photo-item {
+    position: relative;
+    width: fit-content;
+    border-radius: 4px;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  .photo-item:not(.hero) {
+    transform: translateY(100px);
+  }
+
+  .photo-item.visible {
+    opacity: 1;
+  }
+
+  .photo-item.hero.visible {
+    transition: opacity 4s ease;
+  }
+
+  .photo-item:not(.hero).visible {
+    transform: translateY(0);
+    transition: opacity 2s ease, transform 1.5s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .small {
+    width: 40%;
+    max-height: 50vh;
+  }
+
+  .medium {
+    width: 55%;
+    max-height: 60vh;
+  }
+
+  .large {
+    width: 70%;
+    max-height: 70vh;
+  }
+
+  .photo-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (max-width: 768px) {
+    .photo-grid {
+      gap: 20vh;
+      padding: 20vh 0;
+    }
+
+    .photo-section {
+      padding: 1rem;
+      min-height: 60vh;
+    }
+
+    .small, .medium, .large {
+      width: 85%;
+      max-height: 70vh;
+    }
+  }
+
+  .hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: 1;
+  }
+
+  .hero-title {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -180%);
+    font-family: 'Merriweather', serif;
+    color: rgb(238, 237, 226);
+    font-size: 3rem;
+    font-weight: 300;
+    opacity: 0;
+    transition: opacity 3s ease;
+    text-align: center;
+    z-index: 2;
+  }
+
+  .hero-title.visible {
+    opacity: 1;
+  }
+
+  @media (max-width: 768px) {
+    .hero-title {
+      font-size: 2.5rem;
+      padding: 0 1rem;
+    }
+  }
+</style>
+
+<script>
+  function setupAnimations() {
+    const items = Array.from(document.querySelectorAll('.photo-item'));
+    
+    items.forEach((item) => {
+      const imageWrapper = item.querySelector('.image-wrapper');
+      const isHero = item.closest('.hero-section') !== null;
+      const heroTitle = item.querySelector('.hero-title');
+      
+      if (!imageWrapper) return;
+
+      imageWrapper.addEventListener('imageLoaded', () => {
+        if (isHero) {
+          item.classList.add('visible');
+          setTimeout(() => {
+            if (heroTitle) heroTitle.classList.add('visible');
+          }, 1800);
+        } else {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                  setTimeout(() => {
+                    item.classList.add('visible');
+                  }, 100);
+                  observer.unobserve(entry.target);
+                }
+              });
+            },
+            {
+              rootMargin: '50px',
+              threshold: 0.1
+            }
+          );
+
+          observer.observe(item);
+        }
+      });
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', setupAnimations);
+
+  const photos = document.querySelectorAll('.photo-item');
+  let currentIndex = 0;
+
+  function showLightbox(index) {
+    const img = photos[index].querySelector('img');
+    if (!img) return;
+
+    const lightbox = document.createElement('div');
+    lightbox.className = 'lightbox';
+    
+    lightbox.innerHTML = `
+      <button class="nav-button prev" aria-label="Previous image">&lt;</button>
+      <div class="lightbox-content">
+        <img src="${img.src}" alt="${img.alt}">
+        <button class="close-button" aria-label="Close lightbox">&times;</button>
+      </div>
+      <button class="nav-button next" aria-label="Next image">&gt;</button>
+    `;
+
+    document.body.appendChild(lightbox);
+    setupLightboxListeners(lightbox, index);
+  }
+
+  function setupLightboxListeners(lightbox, index) {
+    const handleKeyboard = (e) => {
+      switch(e.key) {
+        case 'Escape': lightbox.remove(); break;
+        case 'ArrowLeft': navigateImage(index - 1); break;
+        case 'ArrowRight': navigateImage(index + 1); break;
+      }
+    };
+
+    const navigateImage = (newIndex) => {
+      if (newIndex >= 0 && newIndex < photos.length) {
+        lightbox.remove();
+        showLightbox(newIndex);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyboard);
+    lightbox.querySelector('.prev')?.addEventListener('click', () => navigateImage(index - 1));
+    lightbox.querySelector('.next')?.addEventListener('click', () => navigateImage(index + 1));
+    lightbox.querySelector('.close-button')?.addEventListener('click', () => lightbox.remove());
+    
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) lightbox.remove();
+    });
+  }
+
+  photos.forEach((photo, index) => {
+    photo.addEventListener('click', () => showLightbox(index));
+  });
+</script>
+
+<style is:global>
+  .lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+
+  .lightbox-content {
+    position: relative;
+    max-width: 90%;
+    max-height: 90vh;
+  }
+
+  .lightbox-content img {
+    max-height: 90vh;
+    object-fit: contain;
+  }
+
+  .close-button,
+  .nav-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 1rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+
+  .close-button:hover,
+  .nav-button:hover {
+    opacity: 1;
+  }
+
+  .close-button {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+  }
+
+  .nav-button {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .prev { left: 2rem; }
+  .next { right: 2rem; }
+
+  @media (max-width: 768px) {
+    .nav-button {
+      font-size: 1.5rem;
+    }
+    .prev { left: 0.5rem; }
+    .next { right: 0.5rem; }
+    .close-button {
+      top: -30px;
+      right: -10px;
+    }
+  }
+</style> 

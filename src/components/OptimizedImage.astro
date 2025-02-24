@@ -1,0 +1,139 @@
+---
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: string;
+  alt: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const { src, alt, loading = 'lazy' } = Astro.props;
+
+const sizes = {
+  mobile: 400,
+  tablet: 600,
+  desktop: 800,
+};
+---
+
+<div class="image-wrapper">
+  <div class="placeholder-blur"></div>
+  <Image 
+    src={src}
+    alt={alt}
+    width={800}
+    height={600}
+    loading={loading}
+    format="webp"
+    quality={80}
+    densities={[1, 2]}
+    sizes={`
+      (max-width: 768px) ${sizes.mobile}px,
+      (max-width: 1200px) ${sizes.tablet}px,
+      ${sizes.desktop}px
+    `}
+  />
+</div>
+
+<style>
+  .image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.05);
+  }
+
+  .placeholder-blur {
+    position: absolute;
+    inset: 0;
+    background: inherit;
+    filter: blur(20px);
+    transform: scale(1.1);
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+    will-change: opacity;
+    transform: translateZ(0);
+  }
+
+  img.loaded {
+    opacity: 1;
+  }
+
+  img.loaded + .placeholder-blur {
+    opacity: 0;
+  }
+</style>
+
+<script>
+  const imageCache = new Map();
+
+  function preloadImage(src: string): Promise<void> {
+    if (imageCache.has(src)) {
+      return Promise.resolve();
+    }
+
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        imageCache.set(src, true);
+        resolve();
+      };
+      img.onerror = reject;
+      img.src = src;
+    });
+  }
+
+  function setupImageLoading(wrapper: Element) {
+    const img = wrapper.querySelector('img');
+    if (!img) return;
+
+    const loadImage = async () => {
+      try {
+        await preloadImage(img.src);
+        img.classList.add('loaded');
+        wrapper.dispatchEvent(new CustomEvent('imageLoaded', { bubbles: true }));
+      } catch (error) {
+        console.error('Failed to load image:', error);
+        wrapper.classList.add('image-error');
+      }
+    };
+
+    if (img.complete) {
+      img.classList.add('loaded');
+      wrapper.dispatchEvent(new CustomEvent('imageLoaded', { bubbles: true }));
+    } else {
+      loadImage();
+    }
+
+    return () => {
+      imageCache.clear();
+    };
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setupImageLoading(entry.target);
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      rootMargin: '50px 0px',
+      threshold: 0.1
+    }
+  );
+
+  document.querySelectorAll('.image-wrapper').forEach(wrapper => {
+    observer.observe(wrapper);
+  });
+</script> 
