@@ -14,22 +14,26 @@ const enhancedImages = images.map((image, index) => ({
 ---
 
 <div class="photo-grid">
-  {enhancedImages.map((image, index) => (
-    <div class={`photo-section ${image.position} ${index === 0 ? 'hero-section' : ''}`}>
-      <div class={`photo-item ${image.size}`} data-image-id={index}>
-        {index === 0 && <div class="hero-overlay"></div>}
-        <OptimizedImage
-          src={image.src}
-          alt={image.alt}
-          loading={index === 0 ? 'eager' : 'lazy'}
-        />
-        {index === 0 && <h1 class="hero-title">looking for Hopper</h1>}
+  {enhancedImages.map((image, index) => {
+    const isHero = index === 0;
+    return (
+      <div class={`photo-section ${image.position} ${isHero ? 'hero-section' : ''}`}>
+        <div class={`photo-item ${image.size}`} data-image-id={index}>
+          {isHero && <div class="hero-overlay" />}
+          <OptimizedImage
+            src={image.src}
+            alt={image.alt}
+            loading={isHero ? 'eager' : 'lazy'}
+          />
+          {isHero && <h1 class="hero-title">looking for Hopper</h1>}
+        </div>
       </div>
-    </div>
-  ))}
+    );
+  })}
 </div>
 
 <style>
+  /* Base Styles */
   .photo-grid {
     display: flex;
     flex-direction: column;
@@ -37,6 +41,7 @@ const enhancedImages = images.map((image, index) => ({
     padding: 0 0 25vh 0;
   }
 
+  /* Hero Section */
   .hero-section {
     min-height: 100vh !important;
     padding: 0 !important;
@@ -53,90 +58,9 @@ const enhancedImages = images.map((image, index) => ({
     object-fit: cover !important;
   }
 
-  .photo-section {
-    min-height: 70vh;
-    display: flex;
-    align-items: center;
-    padding: 2rem;
-  }
-
-  .left { justify-content: flex-start; }
-  .center { justify-content: center; }
-  .right { justify-content: flex-end; }
-
-  .photo-item {
-    position: relative;
-    width: fit-content;
-    border-radius: 4px;
-    overflow: hidden;
-    opacity: 0;
-  }
-
-  .photo-item:not(.hero) {
-    transform: translateY(100px);
-  }
-
-  .photo-item.visible {
-    opacity: 1;
-  }
-
-  .photo-item.hero.visible {
-    transition: opacity 4s ease;
-  }
-
-  .photo-item:not(.hero).visible {
-    transform: translateY(0);
-    transition: opacity 2s ease, transform 1.5s cubic-bezier(0.33, 1, 0.68, 1);
-  }
-
-  .small {
-    width: 40%;
-    max-height: 50vh;
-  }
-
-  .medium {
-    width: 55%;
-    max-height: 60vh;
-  }
-
-  .large {
-    width: 70%;
-    max-height: 70vh;
-  }
-
-  .photo-item img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  html {
-    scroll-behavior: smooth;
-  }
-
-  @media (max-width: 768px) {
-    .photo-grid {
-      gap: 20vh;
-      padding: 20vh 0;
-    }
-
-    .photo-section {
-      padding: 1rem;
-      min-height: 60vh;
-    }
-
-    .small, .medium, .large {
-      width: 85%;
-      max-height: 70vh;
-    }
-  }
-
   .hero-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    inset: 0;
     background-color: rgba(0, 0, 0, 0.4);
     z-index: 1;
   }
@@ -156,11 +80,82 @@ const enhancedImages = images.map((image, index) => ({
     z-index: 2;
   }
 
+  /* Photo Section Layout */
+  .photo-section {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  .left { justify-content: flex-start; }
+  .center { justify-content: center; }
+  .right { justify-content: flex-end; }
+
+  /* Photo Items */
+  .photo-item {
+    position: relative;
+    width: fit-content;
+    border-radius: 4px;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  .photo-item:not(.hero) {
+    transform: translateY(100px);
+  }
+
+  /* Animations */
+  .photo-item.visible {
+    opacity: 1;
+  }
+
   .hero-title.visible {
     opacity: 1;
   }
 
+  .photo-item.hero.visible {
+    transition: opacity 4s ease;
+  }
+
+  .photo-item:not(.hero).visible {
+    transform: translateY(0);
+    transition: opacity 2s ease, transform 1.5s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  /* Image Sizes */
+  .small {
+    width: 40%;
+    max-height: 50vh;
+  }
+
+  .medium {
+    width: 55%;
+    max-height: 60vh;
+  }
+
+  .large {
+    width: 70%;
+    max-height: 70vh;
+  }
+
+  /* Responsive Styles */
   @media (max-width: 768px) {
+    .photo-grid {
+      gap: 20vh;
+      padding: 20vh 0;
+    }
+
+    .photo-section {
+      padding: 1rem;
+      min-height: 60vh;
+    }
+
+    .small, .medium, .large {
+      width: 85%;
+      max-height: 70vh;
+    }
+
     .hero-title {
       font-size: 2.5rem;
       padding: 0 1rem;
@@ -172,6 +167,22 @@ const enhancedImages = images.map((image, index) => ({
   function setupAnimations() {
     const items = Array.from(document.querySelectorAll('.photo-item'));
     
+    const handleIntersection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, 100);
+          observer.unobserve(entry.target);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(handleIntersection, {
+      rootMargin: '50px',
+      threshold: 0.1
+    });
+
     items.forEach((item) => {
       const imageWrapper = item.querySelector('.image-wrapper');
       const isHero = item.closest('.hero-section') !== null;
@@ -183,26 +194,9 @@ const enhancedImages = images.map((image, index) => ({
         if (isHero) {
           item.classList.add('visible');
           setTimeout(() => {
-            if (heroTitle) heroTitle.classList.add('visible');
+            heroTitle?.classList.add('visible');
           }, 1800);
         } else {
-          const observer = new IntersectionObserver(
-            (entries) => {
-              entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                  setTimeout(() => {
-                    item.classList.add('visible');
-                  }, 100);
-                  observer.unobserve(entry.target);
-                }
-              });
-            },
-            {
-              rootMargin: '50px',
-              threshold: 0.1
-            }
-          );
-
           observer.observe(item);
         }
       });
