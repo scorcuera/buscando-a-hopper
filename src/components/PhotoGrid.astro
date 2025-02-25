@@ -177,6 +177,10 @@ enhancedImages.slice(1).forEach((image, index) => {
     border-radius: 4px;
     overflow: hidden;
     opacity: 0;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .photo-item:not(.hero) {
@@ -204,17 +208,57 @@ enhancedImages.slice(1).forEach((image, index) => {
   /* Image Sizes */
   .small {
     width: 40%;
-    max-height: 50vh;
+    max-height: 55vh;
   }
 
   .medium {
     width: 55%;
-    max-height: 60vh;
+    max-height: 65vh;
   }
 
   .large {
     width: 70%;
-    max-height: 70vh;
+    max-height: 75vh;
+  }
+
+  /* Fix for the specific problem images */
+  [data-image-id="12"],
+  [data-image-id="13"] {
+    background-color: transparent;
+  }
+
+  [data-image-id="16"] {
+    overflow: visible;
+    width: 30%;
+    max-height: 45vh;
+  }
+
+  [data-image-id="16"] .image-wrapper {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  [data-image-id="16"] img {
+    max-height: 45vh !important;
+    object-fit: contain !important;
+  }
+
+  /* Update OptimizedImage component styles */
+  :global(.image-wrapper) {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: transparent !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  :global(.photo-item:not(.hero) img) {
+    object-fit: contain !important;
+    width: auto !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
   }
 
   /* Responsive Styles */
@@ -436,22 +480,36 @@ enhancedImages.slice(1).forEach((image, index) => {
     photo.addEventListener('click', () => showLightbox(index));
   });
 
-  // Add text fade animation
+  // Fix the scroll indicator timing issue
   function setupTextAnimations() {
     const textSection = document.querySelector('.text-section');
     const texts = textSection?.querySelectorAll('.fade-text');
+    const secondIndicator = document.querySelector('.second-indicator');
     
-    if (!texts) return;
+    if (!texts || !secondIndicator) return;
+
+    let hasStartedAnimation = false;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
+        if (entries[0].isIntersecting && !hasStartedAnimation) {
+          hasStartedAnimation = true;
+          
+          // Start text animations
           texts.forEach((text, index) => {
             const delay = index === texts.length - 1 ? 750 : 1000;
             setTimeout(() => {
               text.classList.add('visible');
+              
+              // Only show the indicator after the last text has appeared
+              if (index === texts.length - 1) {
+                setTimeout(() => {
+                  secondIndicator.style.opacity = '1';
+                }, 1500); // 2 seconds after last text appears
+              }
             }, index * delay);
           });
+          
           observer.unobserve(entries[0].target);
         }
       },
@@ -463,31 +521,19 @@ enhancedImages.slice(1).forEach((image, index) => {
     observer.observe(textSection);
   }
 
+  // Remove or modify setupScrollIndicators to only handle the first indicator
   function setupScrollIndicators() {
     const firstIndicator = document.querySelector('.first-indicator');
-    const secondIndicator = document.querySelector('.second-indicator');
     const heroSection = document.querySelector('.hero-section');
-    const textSection = document.querySelector('.text-section');
     
-    if (!firstIndicator || !secondIndicator || !heroSection || !textSection) return;
+    if (!firstIndicator || !heroSection) return;
     
     // Show first indicator after hero loads
     setTimeout(() => {
       firstIndicator.style.opacity = '1';
     }, 2500);
     
-    // Show second indicator after text animations complete
-    const textItems = textSection.querySelectorAll('.fade-text');
-    const lastTextIndex = textItems.length - 1;
-    
-    // Calculate delay based on setupTextAnimations timing:
-    // The last text item (index 4) appears at index * delay where delay is 750ms for the last item
-    const lastTextAppearTime = lastTextIndex * 1000;
-    
-    // Add additional delay after the last text is visible
-    setTimeout(() => {
-      secondIndicator.style.opacity = '1';
-    }, lastTextAppearTime + 4500); // 2 seconds after last text appears
+    // Second indicator is now handled in setupTextAnimations
   }
 
   document.addEventListener('DOMContentLoaded', () => {
