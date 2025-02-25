@@ -14,22 +14,42 @@ const enhancedImages = images.map((image, index) => ({
 ---
 
 <div class="photo-grid">
-  {enhancedImages.map((image, index) => {
-    const isHero = index === 0;
-    return (
-      <div class={`photo-section ${image.position} ${isHero ? 'hero-section' : ''}`}>
-        <div class={`photo-item ${image.size}`} data-image-id={index}>
-          {isHero && <div class="hero-overlay" />}
-          <OptimizedImage
-            src={image.src}
-            alt={image.alt}
-            loading={isHero ? 'eager' : 'lazy'}
-          />
-          {isHero && <h1 class="hero-title">buscando a Hopper</h1>}
-        </div>
+  {/* Hero Section */}
+  <div class="photo-section center hero-section">
+    <div class="photo-item hero" data-image-id={0}>
+      <div class="hero-overlay" />
+      <OptimizedImage
+        src={enhancedImages[0].src}
+        alt={enhancedImages[0].alt}
+        loading="eager"
+      />
+      <h1 class="hero-title">buscando a Hopper</h1>
+    </div>
+  </div>
+
+  {/* Text Section */}
+  <div class="text-section">
+    <div class="text-content">
+      <p class="fade-text">Mi gran inspiración en la fotografía ha sido un pintor</p>
+      <p class="fade-text">Edward Hopper</p>
+      <p class="fade-text">Así que un día salí a pasear</p>
+      <p class="fade-text"></p>
+      <p class="fade-text">e intenté copiar su mirada</p>
+    </div>
+  </div>
+
+  {/* Rest of the images */}
+  {enhancedImages.slice(1).map((image, index) => (
+    <div class={`photo-section ${image.position}`}>
+      <div class={`photo-item ${image.size}`} data-image-id={index + 1}>
+        <OptimizedImage
+          src={image.src}
+          alt={image.alt}
+          loading="lazy"
+        />
       </div>
-    );
-  })}
+    </div>
+  ))}
 </div>
 
 <style>
@@ -185,6 +205,43 @@ const enhancedImages = images.map((image, index) => ({
       padding: 0 1rem;
     }
   }
+
+  /* Add new text section styles */
+  .text-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 25vh;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .text-content {
+    text-align: center;
+    max-width: 800px;
+  }
+
+  .fade-text {
+    font-family: 'Merriweather', serif;
+    color: rgb(238, 237, 226);
+    font-size: 1.2rem;
+    font-weight: 150;
+    opacity: 0;
+    margin: 1.5em 0;
+    line-height: 1.6;
+  }
+
+  .fade-text.visible {
+    opacity: 1;
+    transition: opacity 2s ease;
+  }
+
+  @media (max-width: 768px) {
+    .fade-text {
+      font-size: 1.2rem;
+      margin: 1em 0;
+    }
+  }
 </style>
 
 <script>
@@ -219,7 +276,7 @@ const enhancedImages = images.map((image, index) => ({
           item.classList.add('visible');
           setTimeout(() => {
             heroTitle?.classList.add('visible');
-          }, 1800);
+          }, 1400);
         } else {
           observer.observe(item);
         }
@@ -280,6 +337,38 @@ const enhancedImages = images.map((image, index) => ({
 
   photos.forEach((photo, index) => {
     photo.addEventListener('click', () => showLightbox(index));
+  });
+
+  // Add text fade animation
+  function setupTextAnimations() {
+    const textSection = document.querySelector('.text-section');
+    const texts = textSection?.querySelectorAll('.fade-text');
+    
+    if (!texts) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          texts.forEach((text, index) => {
+            const delay = index === texts.length - 1 ? 750 : 1000;
+            setTimeout(() => {
+              text.classList.add('visible');
+            }, index * delay);
+          });
+          observer.unobserve(entries[0].target);
+        }
+      },
+      {
+        threshold: 0.2
+      }
+    );
+
+    observer.observe(textSection);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setupAnimations();
+    setupTextAnimations();
   });
 </script>
 
