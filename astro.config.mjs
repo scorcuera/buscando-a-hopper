@@ -9,6 +9,6 @@ export default defineConfig({
     ssr: {
     }
   },
-  site: 'https://github.com/scorcuera.io',
-  base: 'buscando-a-hopper',
+  site: 'https://scorcuera.github.io',
+  base: '/buscando-a-hopper',
 });
