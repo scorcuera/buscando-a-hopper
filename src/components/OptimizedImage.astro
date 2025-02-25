@@ -1,37 +1,44 @@
 ---
 import { Image } from 'astro:assets';
 
-interface Props {
+export interface Props {
   src: string;
   alt: string;
-  loading?: 'lazy' | 'eager';
+  loading?: "lazy" | "eager";
 }
 
-const { src, alt, loading = 'lazy' } = Astro.props;
+const { 
+  src, 
+  alt, 
+  loading = "lazy"
+} = Astro.props;
 
-const sizes = {
-  mobile: 400,
-  tablet: 800,
-  desktop: 1920,
-};
+// Determine if this is a hero image based on loading attribute
+const isHero = loading === "eager";
+
+// Images load faster with proper dimensions
+const width = isHero ? 1920 : 800;
+const height = isHero ? 1080 : 600;
+
+// Higher quality for hero, lower for regular images
+const quality = isHero ? 85 : 60;
 ---
 
 <div class="image-wrapper">
-  <div class="placeholder-blur"></div>
-  <Image 
+  <!-- Preload hero images -->
+  {isHero && (
+    <link rel="preload" href={src} as="image" />
+  )}
+  
+  <Image
     src={src}
     alt={alt}
-    width={1920}
-    height={1080}
-    loading={loading}
+    width={width}
+    height={height}
+    quality={quality}
     format="webp"
-    quality={90}
-    densities={[1, 2]}
-    sizes={`
-      (max-width: 768px) ${sizes.mobile}px,
-      (max-width: 1200px) ${sizes.tablet}px,
-      ${sizes.desktop}px
-    `}
+    loading={loading}
+    decoding={isHero ? "sync" : "async"}
   />
 </div>
 
@@ -40,107 +47,49 @@ const sizes = {
     position: relative;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.05);
+    background-color: #1a1a1a; /* Dark gray placeholder */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
-  .placeholder-blur {
-    position: absolute;
-    inset: 0;
-    background: inherit;
-    filter: blur(20px);
-    transform: scale(1.1);
-    opacity: 0.5;
+  :global(.image-wrapper img) {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    opacity: 0;
     transition: opacity 0.3s ease;
   }
 
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    opacity: 0;
-    transition: opacity 0.8s ease;
-    will-change: opacity;
-    transform: translateZ(0);
-  }
-
-  img.loaded {
+  :global(.image-wrapper img.loaded) {
     opacity: 1;
   }
-
-  img.loaded + .placeholder-blur {
-    opacity: 0;
-  }
-
-  :global(.hero-section) .image-wrapper img {
+  
+  :global(.hero-section .image-wrapper img) {
     object-fit: cover !important;
     width: 100vw !important;
     height: 100vh !important;
-    max-width: none !important;
   }
 </style>
 
 <script>
-  const imageCache = new Map();
-
-  function preloadImage(src: string): Promise<void> {
-    if (imageCache.has(src)) {
-      return Promise.resolve();
-    }
-
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        imageCache.set(src, true);
-        resolve();
-      };
-      img.onerror = reject;
-      img.src = src;
-    });
-  }
-
-  function setupImageLoading(wrapper: Element) {
+  // Find all image wrappers
+  document.querySelectorAll('.image-wrapper').forEach(wrapper => {
     const img = wrapper.querySelector('img');
     if (!img) return;
-
-    const loadImage = async () => {
-      try {
-        await preloadImage(img.src);
-        img.classList.add('loaded');
-        wrapper.dispatchEvent(new CustomEvent('imageLoaded', { bubbles: true }));
-      } catch (error) {
-        console.error('Failed to load image:', error);
-        wrapper.classList.add('image-error');
-      }
-    };
-
-    if (img.complete) {
+    
+    // Set up image loading completion
+    const setupImageLoaded = () => {
       img.classList.add('loaded');
       wrapper.dispatchEvent(new CustomEvent('imageLoaded', { bubbles: true }));
-    } else {
-      loadImage();
-    }
-
-    return () => {
-      imageCache.clear();
     };
-  }
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setupImageLoading(entry.target);
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    {
-      rootMargin: '50px 0px',
-      threshold: 0.1
+    
+    // Check if image is already loaded
+    if (img.complete) {
+      setupImageLoaded();
+    } else {
+      img.onload = setupImageLoaded;
     }
-  );
-
-  document.querySelectorAll('.image-wrapper').forEach(wrapper => {
-    observer.observe(wrapper);
   });
 </script> 

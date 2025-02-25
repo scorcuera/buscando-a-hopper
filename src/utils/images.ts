@@ -7,8 +7,16 @@ export interface ImageMetadata {
   format: string;
 }
 
+// Define different image sizes for responsive loading
+const imageSizes = {
+  small: { width: 400 },
+  medium: { width: 800 },
+  large: { width: 1200 },
+  hero: { width: 1600 }
+};
+
 // Import all images
-const images = import.meta.glob('/public/imgs/*.{jpeg,jpg,png,gif}', {
+const images = import.meta.glob('/public/imgs/*.{jpeg,jpg,png,gif,webp}', {
   import: 'default',
 });
 
@@ -20,10 +28,14 @@ export async function getImages() {
     
     // Ensure path is correctly formed with base path
     const src = path.replace('/public', basePath);
+    const fileName = path.split('/').pop() || '';
+    const alt = fileName.split('.')[0] || 'Photo';
     
     return {
       src,
-      alt: path.split('/').pop()?.split('.')[0] || 'Photo'
+      alt,
+      // Add small thumbnail version for preloading
+      thumbnail: src.replace(/\.(jpeg|jpg|png|gif)$/i, '-thumb.$1')
     };
   });
 

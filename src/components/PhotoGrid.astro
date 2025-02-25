@@ -394,15 +394,15 @@ enhancedImages.slice(1).forEach((image, index) => {
         if (entry.isIntersecting) {
           setTimeout(() => {
             entry.target.classList.add('visible');
-          }, 100);
+          }, 50);
           observer.unobserve(entry.target);
         }
       });
     };
 
     const observer = new IntersectionObserver(handleIntersection, {
-      rootMargin: '50px',
-      threshold: 0.1
+      rootMargin: '200px',
+      threshold: 0.01
     });
 
     items.forEach((item) => {
@@ -412,16 +412,26 @@ enhancedImages.slice(1).forEach((image, index) => {
       
       if (!imageWrapper) return;
 
+      if (!isHero) {
+        observer.observe(item);
+      }
+
       imageWrapper.addEventListener('imageLoaded', () => {
         if (isHero) {
           item.classList.add('visible');
           setTimeout(() => {
             heroTitle?.classList.add('visible');
-          }, 1400);
-        } else {
-          observer.observe(item);
+          }, 1000);
         }
       });
+    });
+
+    const preloadImages = Array.from(document.querySelectorAll('.photo-item:not(.hero)')).slice(0, 3);
+    preloadImages.forEach(item => {
+      const img = item.querySelector('img');
+      if (img) {
+        img.loading = 'eager';
+      }
     });
   }
 
