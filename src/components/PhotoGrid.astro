@@ -202,7 +202,7 @@ enhancedImages.slice(1).forEach((image, index) => {
 
   .photo-item:not(.hero).visible {
     transform: translateY(0);
-    transition: opacity 2s ease, transform 1.5s cubic-bezier(0.33, 1, 0.68, 1);
+    transition: opacity 4s ease, transform 1.5s cubic-bezier(0.33, 1, 0.68, 1);
   }
 
   /* Image Sizes */
@@ -386,15 +386,22 @@ enhancedImages.slice(1).forEach((image, index) => {
 </style>
 
 <script>
+  // Combined setup function to avoid duplicate initialization
+  function setupPage() {
+    setupAnimations();
+    setupTextAnimations();
+    setupScrollIndicators();
+  }
+
   function setupAnimations() {
     const items = Array.from(document.querySelectorAll('.photo-item'));
     
-    const handleIntersection = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
+    const handleIntersection = (entries, observer) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           setTimeout(() => {
             entry.target.classList.add('visible');
-          }, 50);
+          }, 100);
           observer.unobserve(entry.target);
         }
       });
@@ -426,6 +433,7 @@ enhancedImages.slice(1).forEach((image, index) => {
       });
     });
 
+    // Preload first few non-hero images
     const preloadImages = Array.from(document.querySelectorAll('.photo-item:not(.hero)')).slice(0, 3);
     preloadImages.forEach(item => {
       const img = item.querySelector('img');
@@ -434,17 +442,6 @@ enhancedImages.slice(1).forEach((image, index) => {
       }
     });
   }
-
-  document.addEventListener('DOMContentLoaded', setupAnimations);
-
-  const photos = document.querySelectorAll('.photo-item');
-  let currentIndex = 0;
-
-  // Remove the click event listeners on photos
-  photos.forEach((photo, index) => {
-    // Delete or comment out this event listener
-    // photo.addEventListener('click', () => showLightbox(index));
-  });
 
   // Fix the scroll indicator timing issue
   function setupTextAnimations() {
@@ -471,7 +468,7 @@ enhancedImages.slice(1).forEach((image, index) => {
               if (index === texts.length - 1) {
                 setTimeout(() => {
                   secondIndicator.style.opacity = '1';
-                }, 1500); // 2 seconds after last text appears
+                }, 1500);
               }
             }, index * delay);
           });
@@ -487,39 +484,36 @@ enhancedImages.slice(1).forEach((image, index) => {
     observer.observe(textSection);
   }
 
-  // Remove or modify setupScrollIndicators to only handle the first indicator
   function setupScrollIndicators() {
     const firstIndicator = document.querySelector('.first-indicator');
     const heroSection = document.querySelector('.hero-section');
     
     if (!firstIndicator || !heroSection) return;
     
-    // Show first indicator after hero loads
+    // Show first indicator after a delay regardless of hero image load status
     setTimeout(() => {
       firstIndicator.style.opacity = '1';
-    }, 2500);
+    }, 2000);
     
-    // Second indicator is now handled in setupTextAnimations
+    // Also force the hero to be visible after a timeout
+    const heroItem = heroSection.querySelector('.photo-item');
+    if (heroItem) {
+      setTimeout(() => {
+        heroItem.classList.add('visible');
+        const heroTitle = heroItem.querySelector('.hero-title');
+        if (heroTitle) {
+          setTimeout(() => {
+            heroTitle.classList.add('visible');
+          }, 1000);
+        }
+      }, 1000);
+    }
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    setupAnimations();
-    setupTextAnimations();
-    setupScrollIndicators();
-  });
+  // Single event listener to initialize everything
+  document.addEventListener('DOMContentLoaded', setupPage);
 </script>
 
 <style is:global>
-  /* Remove any lightbox-related CSS */
-  .lightbox {
-    /* Delete these styles */
-  }
-
-  .lightbox-content {
-    /* Delete these styles */
-  }
-
-  .close-button, .prev, .next {
-    /* Delete these styles */
-  }
+  /* Remove lightbox-related CSS entirely */
 </style> 

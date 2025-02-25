@@ -25,21 +25,37 @@ const quality = isHero ? 85 : 60;
 ---
 
 <div class="image-wrapper">
-  <!-- Preload hero images -->
+  {!src && (
+    <div style="padding: 20px; color: red;">Image not found</div>
+  )}
+  
   {isHero && (
     <link rel="preload" href={src} as="image" />
   )}
   
-  <Image
-    src={src}
-    alt={alt}
-    width={width}
-    height={height}
-    quality={quality}
-    format="webp"
-    loading={loading}
-    decoding={isHero ? "sync" : "async"}
-  />
+  {/* Use direct HTML img for hero images to bypass Astro Image processing */}
+  {isHero ? (
+    <img 
+      src={src} 
+      alt={alt} 
+      width={width} 
+      height={height} 
+      loading={loading} 
+      decoding="sync"
+      class="hero-img" 
+    />
+  ) : (
+    <Image
+      src={src}
+      alt={alt}
+      width={width}
+      height={height}
+      quality={quality}
+      format="webp"
+      loading={loading}
+      decoding="async"
+    />
+  )}
 </div>
 
 <style>
