@@ -11,8 +11,8 @@ const { src, alt, loading = 'lazy' } = Astro.props;
 
 const sizes = {
   mobile: 400,
-  tablet: 600,
-  desktop: 800,
+  tablet: 800,
+  desktop: 1920,
 };
 ---
 
@@ -21,11 +21,11 @@ const sizes = {
   <Image 
     src={src}
     alt={alt}
-    width={800}
-    height={600}
+    width={1920}
+    height={1080}
     loading={loading}
     format="webp"
-    quality={80}
+    quality={90}
     densities={[1, 2]}
     sizes={`
       (max-width: 768px) ${sizes.mobile}px,
@@ -69,6 +69,13 @@ const sizes = {
 
   img.loaded + .placeholder-blur {
     opacity: 0;
+  }
+
+  :global(.hero-section) .image-wrapper img {
+    object-fit: cover !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-width: none !important;
   }
 </style>
 

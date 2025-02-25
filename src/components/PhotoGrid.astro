@@ -25,7 +25,7 @@ const enhancedImages = images.map((image, index) => ({
             alt={image.alt}
             loading={isHero ? 'eager' : 'lazy'}
           />
-          {isHero && <h1 class="hero-title">looking for Hopper</h1>}
+          {isHero && <h1 class="hero-title">buscando a Hopper</h1>}
         </div>
       </div>
     );
@@ -45,17 +45,41 @@ const enhancedImages = images.map((image, index) => ({
   .hero-section {
     min-height: 100vh !important;
     padding: 0 !important;
-    margin: 0;
+    margin: 0 !important;
+    width: 100vw !important;
+    position: relative !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    overflow: visible !important;
   }
 
   .hero-section .photo-item {
     width: 100vw !important;
     height: 100vh !important;
-    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
   }
 
   .hero-section .photo-item img {
+    width: 100vw !important;
+    height: 100vh !important;
     object-fit: cover !important;
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  @media (min-width: 1200px) {
+    .hero-section,
+    .hero-section .photo-item,
+    .hero-section .photo-item img {
+      width: 100vw !important;
+      left: 50% !important;
+      transform: translateX(-50%) !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
   }
 
   .hero-overlay {
@@ -69,10 +93,10 @@ const enhancedImages = images.map((image, index) => ({
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -180%);
+    transform: translate(-50%, -380%);
     font-family: 'Merriweather', serif;
     color: rgb(238, 237, 226);
-    font-size: 3rem;
+    font-size: 1.5rem;
     font-weight: 300;
     opacity: 0;
     transition: opacity 3s ease;
