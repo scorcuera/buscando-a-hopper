@@ -8,5 +8,7 @@ export default defineConfig({
     },
     ssr: {
     }
-  }
+  },
+  site: 'https://github.com/scorcuera.io',
+  base: 'buscando-a-hopper',
 });
