@@ -2,15 +2,43 @@
 import { getImages } from '../utils/images';
 import OptimizedImage from './OptimizedImage.astro';
 
-const images = await getImages();
-const positions = ['left', 'center', 'right'];
-const sizes = ['small', 'medium', 'large'];
+const enhancedImages = await getImages();
 
-const enhancedImages = images.map((image, index) => ({
-  ...image,
-  position: positions[index % positions.length],
-  size: index === 0 ? 'hero' : sizes[Math.floor(Math.random() * sizes.length)]
-}));
+// First image is still the hero
+enhancedImages[0].position = 'center';
+enhancedImages[0].size = 'hero';
+
+// Set specific size and position for each remaining image
+const imageLayout = [
+  { size: 'large', position: 'center' },  // img_01
+  { size: 'medium', position: 'right' },  // img_02
+  { size: 'large', position: 'left' },    // img_03
+  { size: 'small', position: 'center' },  // img_04
+  { size: 'medium', position: 'left' },   // img_05
+  { size: 'large', position: 'center' },  // img_06
+  { size: 'medium', position: 'center' }, // img_07
+  { size: 'large', position: 'right' },   // img_08
+  { size: 'medium', position: 'left' },   // img_09
+  { size: 'medium', position: 'center' }, // img_10
+  { size: 'small', position: 'right' },   // img_11
+  { size: 'small', position: 'left' },    // img_12
+  { size: 'medium', position: 'center' }, // img_13
+  { size: 'small', position: 'right' },   // img_14
+  { size: 'large', position: 'left' },    // img_15
+  { size: 'small', position: 'right' },   // img_16
+  { size: 'small', position: 'center' },  // img_17
+  { size: 'medium', position: 'right' },  // img_18
+  { size: 'medium', position: 'center' }, // img_19
+  { size: 'small', position: 'left' }    // img_20
+];
+
+// Apply the layout to each image after the hero
+enhancedImages.slice(1).forEach((image, index) => {
+  if (index < imageLayout.length) {
+    image.size = imageLayout[index].size;
+    image.position = imageLayout[index].position;
+  }
+});
 ---
 
 <div class="photo-grid">
@@ -24,17 +52,23 @@ const enhancedImages = images.map((image, index) => ({
         loading="eager"
       />
       <h1 class="hero-title">buscando a Hopper</h1>
+      <div class="scroll-indicator first-indicator">
+        <span class="scroll-arrow"></span>
+      </div>
     </div>
   </div>
 
   {/* Text Section */}
   <div class="text-section">
     <div class="text-content">
-      <p class="fade-text">Mi gran inspiración en la fotografía ha sido un pintor</p>
+      <p class="fade-text">mi gran inspiración en la fotografía ha sido un pintor</p>
       <p class="fade-text">Edward Hopper</p>
-      <p class="fade-text">Así que un día salí a pasear</p>
+      <p class="fade-text">así que un día salí a pasear</p>
       <p class="fade-text"></p>
       <p class="fade-text">e intenté copiar su mirada</p>
+    </div>
+    <div class="scroll-indicator second-indicator">
+      <span class="scroll-arrow"></span>
     </div>
   </div>
 
@@ -208,17 +242,20 @@ const enhancedImages = images.map((image, index) => ({
 
   /* Add new text section styles */
   .text-section {
-    min-height: 100vh;
+    min-height: 75vh;
     display: flex;
-    align-items: flex-start;
-    padding-top: 25vh;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     padding: 2rem;
+    position: relative;
+    padding-bottom: 5rem;
   }
 
   .text-content {
     text-align: center;
     max-width: 800px;
+    position: relative;
+    padding-bottom: 120px;
   }
 
   .fade-text {
@@ -240,6 +277,66 @@ const enhancedImages = images.map((image, index) => ({
     .fade-text {
       font-size: 1.2rem;
       margin: 1em 0;
+    }
+  }
+
+  /* Scroll indicator styles */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0;
+    transition: opacity 1s ease;
+    z-index: 5;
+  }
+
+  .scroll-arrow {
+    display: block;
+    width: 20px;
+    height: 20px;
+    border-bottom: 2px solid rgba(238, 237, 226, 0.7);
+    border-right: 2px solid rgba(238, 237, 226, 0.7);
+    transform: rotate(45deg);
+    animation: scroll-bounce 2s infinite;
+  }
+
+  @keyframes scroll-bounce {
+    0%, 20%, 50%, 80%, 100% {
+      transform: translateY(0) rotate(45deg);
+    }
+    40% {
+      transform: translateY(-10px) rotate(45deg);
+    }
+    60% {
+      transform: translateY(-5px) rotate(45deg);
+    }
+  }
+
+  .second-indicator {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    opacity: 0;
+    margin-top: auto;
+  }
+
+  .second-indicator .scroll-arrow {
+    width: 15px;
+    height: 15px;
+    border-bottom: 3px solid rgba(238, 237, 226, 1);
+    border-right: 3px solid rgba(238, 237, 226, 1);
+  }
+
+  @media (max-width: 768px) {
+    .scroll-indicator {
+      bottom: 1.5rem;
+    }
+    
+    .second-indicator {
+      bottom: 1.5rem;
     }
   }
 </style>
@@ -366,9 +463,37 @@ const enhancedImages = images.map((image, index) => ({
     observer.observe(textSection);
   }
 
+  function setupScrollIndicators() {
+    const firstIndicator = document.querySelector('.first-indicator');
+    const secondIndicator = document.querySelector('.second-indicator');
+    const heroSection = document.querySelector('.hero-section');
+    const textSection = document.querySelector('.text-section');
+    
+    if (!firstIndicator || !secondIndicator || !heroSection || !textSection) return;
+    
+    // Show first indicator after hero loads
+    setTimeout(() => {
+      firstIndicator.style.opacity = '1';
+    }, 2500);
+    
+    // Show second indicator after text animations complete
+    const textItems = textSection.querySelectorAll('.fade-text');
+    const lastTextIndex = textItems.length - 1;
+    
+    // Calculate delay based on setupTextAnimations timing:
+    // The last text item (index 4) appears at index * delay where delay is 750ms for the last item
+    const lastTextAppearTime = lastTextIndex * 1000;
+    
+    // Add additional delay after the last text is visible
+    setTimeout(() => {
+      secondIndicator.style.opacity = '1';
+    }, lastTextAppearTime + 4500); // 2 seconds after last text appears
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     setupAnimations();
     setupTextAnimations();
+    setupScrollIndicators();
   });
 </script>
 
