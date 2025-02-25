@@ -430,54 +430,10 @@ enhancedImages.slice(1).forEach((image, index) => {
   const photos = document.querySelectorAll('.photo-item');
   let currentIndex = 0;
 
-  function showLightbox(index) {
-    const img = photos[index].querySelector('img');
-    if (!img) return;
-
-    const lightbox = document.createElement('div');
-    lightbox.className = 'lightbox';
-    
-    lightbox.innerHTML = `
-      <button class="nav-button prev" aria-label="Previous image">&lt;</button>
-      <div class="lightbox-content">
-        <img src="${img.src}" alt="${img.alt}">
-        <button class="close-button" aria-label="Close lightbox">&times;</button>
-      </div>
-      <button class="nav-button next" aria-label="Next image">&gt;</button>
-    `;
-
-    document.body.appendChild(lightbox);
-    setupLightboxListeners(lightbox, index);
-  }
-
-  function setupLightboxListeners(lightbox, index) {
-    const handleKeyboard = (e) => {
-      switch(e.key) {
-        case 'Escape': lightbox.remove(); break;
-        case 'ArrowLeft': navigateImage(index - 1); break;
-        case 'ArrowRight': navigateImage(index + 1); break;
-      }
-    };
-
-    const navigateImage = (newIndex) => {
-      if (newIndex >= 0 && newIndex < photos.length) {
-        lightbox.remove();
-        showLightbox(newIndex);
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyboard);
-    lightbox.querySelector('.prev')?.addEventListener('click', () => navigateImage(index - 1));
-    lightbox.querySelector('.next')?.addEventListener('click', () => navigateImage(index + 1));
-    lightbox.querySelector('.close-button')?.addEventListener('click', () => lightbox.remove());
-    
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) lightbox.remove();
-    });
-  }
-
+  // Remove the click event listeners on photos
   photos.forEach((photo, index) => {
-    photo.addEventListener('click', () => showLightbox(index));
+    // Delete or comment out this event listener
+    // photo.addEventListener('click', () => showLightbox(index));
   });
 
   // Fix the scroll indicator timing issue
@@ -544,71 +500,16 @@ enhancedImages.slice(1).forEach((image, index) => {
 </script>
 
 <style is:global>
+  /* Remove any lightbox-related CSS */
   .lightbox {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.95);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
+    /* Delete these styles */
   }
 
   .lightbox-content {
-    position: relative;
-    max-width: 90%;
-    max-height: 90vh;
+    /* Delete these styles */
   }
 
-  .lightbox-content img {
-    max-height: 90vh;
-    object-fit: contain;
-  }
-
-  .close-button,
-  .nav-button {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 2rem;
-    cursor: pointer;
-    padding: 1rem;
-    opacity: 0.7;
-    transition: opacity 0.2s;
-  }
-
-  .close-button:hover,
-  .nav-button:hover {
-    opacity: 1;
-  }
-
-  .close-button {
-    position: absolute;
-    top: -40px;
-    right: -40px;
-  }
-
-  .nav-button {
-    position: fixed;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
-  .prev { left: 2rem; }
-  .next { right: 2rem; }
-
-  @media (max-width: 768px) {
-    .nav-button {
-      font-size: 1.5rem;
-    }
-    .prev { left: 0.5rem; }
-    .next { right: 0.5rem; }
-    .close-button {
-      top: -30px;
-      right: -10px;
-    }
+  .close-button, .prev, .next {
+    /* Delete these styles */
   }
 </style> 
