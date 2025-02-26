@@ -264,22 +264,65 @@ enhancedImages.slice(1).forEach((image, index) => {
   /* Responsive Styles */
   @media (max-width: 768px) {
     .photo-grid {
-      gap: 20vh;
+      gap: 6vh;
     }
 
     .photo-section {
-      padding: 1rem;
-      min-height: 60vh;
+      padding: 0.5rem;
+      min-height: auto;
+      justify-content: center !important;
     }
 
-    .small, .medium, .large {
-      width: 85%;
-      max-height: 70vh;
+    .small, 
+    .medium, 
+    .large {
+      width: calc(100vw - 1rem) !important;
+      max-height: none !important;
+      margin: 0 auto;
     }
+
+    .left, 
+    .right, 
+    .center {
+      justify-content: center !important;
+    }
+
 
     .hero-title {
-      font-size: 1rem;
-      padding: 0 0.5rem;
+      font-size: 1.2rem !important;
+      padding: 0 0 !important;
+    }
+
+    .first-indicator {
+      bottom: 5rem !important;
+    }
+
+    /* Update text section styles */
+    .text-section {
+      min-height: auto;  /* Remove fixed height */
+      padding: 2rem 0.5rem;  /* Reduce padding */
+      padding-bottom: 10rem !important;
+      gap: 2vh;  /* Reduce gap */
+    }
+
+    .fade-text {
+      font-size: 1.2rem !important;  /* Make text smaller */
+      margin: 0.8em 0;  /* Reduce margins */
+    }
+
+    :global(.photo-item:not(.hero) .image-wrapper) {
+      width: 100% !important;
+    }
+
+    :global(.photo-item:not(.hero) img) {
+      width: 100% !important;
+      height: auto !important;
+      object-fit: contain !important;
+    }
+
+    [data-image-id="16"] {
+      width: calc(100vw - 1rem) !important;
+      max-height: none !important;
     }
   }
 
@@ -291,7 +334,8 @@ enhancedImages.slice(1).forEach((image, index) => {
     align-items: center;
     padding: 2rem;
     position: relative;
-    padding-bottom: 5rem;
+    padding: 5rem 5rem;
+    gap: 6vh;
   }
 
   .text-content {
@@ -314,13 +358,6 @@ enhancedImages.slice(1).forEach((image, index) => {
   .fade-text.visible {
     opacity: 1;
     transition: opacity 2s ease;
-  }
-
-  @media (max-width: 768px) {
-    .fade-text {
-      font-size: 1.2rem;
-      margin: 1em 0;
-    }
   }
 
   /* Scroll indicator styles */
@@ -371,16 +408,6 @@ enhancedImages.slice(1).forEach((image, index) => {
     height: 15px;
     border-bottom: 3px solid rgba(238, 237, 226, 1);
     border-right: 3px solid rgba(238, 237, 226, 1);
-  }
-
-  @media (max-width: 768px) {
-    .scroll-indicator {
-      bottom: 1.5rem;
-    }
-    
-    .second-indicator {
-      bottom: 1.5rem;
-    }
   }
 </style>
 
