@@ -359,7 +359,7 @@ enhancedImages.slice(1).forEach((image, index) => {
 
   .second-indicator {
     position: absolute;
-    bottom: 2rem;
+    bottom: 9rem;
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
@@ -468,7 +468,7 @@ enhancedImages.slice(1).forEach((image, index) => {
               if (index === texts.length - 1) {
                 setTimeout(() => {
                   secondIndicator.style.opacity = '1';
-                }, 1500);
+                }, 1300);
               }
             }, index * delay);
           });
@@ -493,7 +493,7 @@ enhancedImages.slice(1).forEach((image, index) => {
     // Show first indicator after a delay regardless of hero image load status
     setTimeout(() => {
       firstIndicator.style.opacity = '1';
-    }, 2000);
+    }, 2500);
     
     // Also force the hero to be visible after a timeout
     const heroItem = heroSection.querySelector('.photo-item');
