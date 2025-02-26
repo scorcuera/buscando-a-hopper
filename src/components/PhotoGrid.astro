@@ -15,17 +15,17 @@ const imageLayout = [
   { size: 'large', position: 'left' },    // img_03
   { size: 'small', position: 'center' },  // img_04
   { size: 'medium', position: 'left' },   // img_05
-  { size: 'large', position: 'center' },  // img_06
-  { size: 'medium', position: 'center' }, // img_07
-  { size: 'large', position: 'right' },   // img_08
+  { size: 'large', position: 'right' },  // img_06
+  { size: 'medium', position: 'left' }, // img_07
+  { size: 'large', position: 'center' },   // img_08
   { size: 'medium', position: 'left' },   // img_09
-  { size: 'medium', position: 'center' }, // img_10
-  { size: 'small', position: 'right' },   // img_11
-  { size: 'small', position: 'left' },    // img_12
+  { size: 'large', position: 'right' }, // img_10
+  { size: 'large', position: 'center' },   // img_11
+  { size: 'medium', position: 'left' },    // img_12
   { size: 'medium', position: 'center' }, // img_13
-  { size: 'small', position: 'right' },   // img_14
-  { size: 'large', position: 'left' },    // img_15
-  { size: 'small', position: 'right' },   // img_16
+  { size: 'medium', position: 'left' },   // img_14
+  { size: 'large', position: 'right' },    // img_15
+  { size: 'medium', position: 'center' },   // img_16
   { size: 'small', position: 'center' },  // img_17
   { size: 'medium', position: 'right' },  // img_18
   { size: 'medium', position: 'center' }, // img_19
@@ -39,6 +39,30 @@ enhancedImages.slice(1).forEach((image, index) => {
     image.position = imageLayout[index].position;
   }
 });
+
+// Add text captions array matching the image layout
+const captionTexts = [
+  "lo busqué en los que esperan",        // img_01 (index 0)
+  "y en los que rezan",                   // img_02 (index 1)
+  "a última hora, en el mercado",           // img_03 (index 2)
+  "y a primera, en exámenes",       // img_04 (index 3)
+  "lo busqué en los que llegan puntuales",             // img_05 (index 4)
+  "y en los noctámbulos",               // img_06 (index 5)
+  "en los restos de fantasmas",     // img_07 (index 6)
+  "y en las primeras ideas",   // img_08 (index 7)
+  "lo busqué de camino al trabajo",              // img_09 (index 8)
+  "y de vuelta a casa",                // img_10 (index 9)
+  "en los juegos de pelota",                     // img_11 (index 10)
+  "y en los de manos",            // img_12 (index 11)
+  "lo busqué en los soñadores",         // img_13 (index 12)
+  "y en sus noches",                   // img_14 (index 13)
+  "tal vez en un domingo de otoño",                      // img_15 (index 14)
+  "o en uno de invierno",                // img_16 (index 15)
+  "lo busqué en los portales dimensionales", // img_17 (index 16)
+  "y en los liminales",                      // img_18 (index 17)
+  "lo busqué en el presente",                // img_19 (index 18)
+  "y en el futuro"                           // img_20 (index 19)
+];
 ---
 
 <div class="photo-grid">
@@ -62,10 +86,10 @@ enhancedImages.slice(1).forEach((image, index) => {
   <div class="text-section">
     <div class="text-content">
       <p class="fade-text">Edward Hopper</p>
-      <p class="fade-text">un pintor que me enseñó a fotografiar</p>
+      <p class="fade-text">un pintor que me enseñó a mirar</p>
       <p class="fade-text">un día salí a pasear</p>
       <p class="fade-text"></p>
-      <p class="fade-text">e intenté copiar su mirada</p>
+      <p class="fade-text">y lo busqué</p>
     </div>
     <div class="scroll-indicator second-indicator">
       <span class="scroll-arrow"></span>
@@ -73,17 +97,34 @@ enhancedImages.slice(1).forEach((image, index) => {
   </div>
 
   {/* Rest of the images */}
-  {enhancedImages.slice(1).map((image, index) => (
-    <div class={`photo-section ${image.position}`}>
-      <div class={`photo-item ${image.size}`} data-image-id={index + 1}>
-        <OptimizedImage
-          src={image.src}
-          alt={image.alt}
-          loading="lazy"
-        />
+  {enhancedImages.slice(1).map((image, index) => {
+    const caption = captionTexts[index];
+    const isImage06 = index === 5; // img_06 is at index 5 (6th image after hero)
+    
+    return (
+      <div class={`photo-section ${image.position}`}>
+        <div class={`photo-item ${image.size}`} data-image-id={index + 1}>
+          <OptimizedImage
+            src={image.src}
+            alt={image.alt}
+            loading="lazy"
+          />
+          {/* Special case for image_06 - caption inside the photo */}
+          {isImage06 && (
+            <div class="caption-wrapper-overlay">
+              <p class="image-caption">{caption}</p>
+            </div>
+          )}
+        </div>
+        {/* Regular caption for all other images */}
+        {!isImage06 && (
+          <div class={`caption-wrapper ${image.position}`}>
+            <p class="image-caption">{caption}</p>
+          </div>
+        )}
       </div>
-    </div>
-  ))}
+    )
+  })}
 </div>
 
 <style>
@@ -160,6 +201,7 @@ enhancedImages.slice(1).forEach((image, index) => {
 
   /* Photo Section Layout */
   .photo-section {
+    position: relative;
     min-height: 70vh;
     display: flex;
     align-items: center;
@@ -227,18 +269,18 @@ enhancedImages.slice(1).forEach((image, index) => {
     background-color: transparent;
   }
 
-  [data-image-id="16"] {
+  [data-image-id="15"] {
     overflow: visible;
     width: 30%;
     max-height: 45vh;
   }
 
-  [data-image-id="16"] .image-wrapper {
+  [data-image-id="15"] .image-wrapper {
     max-width: 100%;
     max-height: 100%;
   }
 
-  [data-image-id="16"] img {
+  [data-image-id="15"] img {
     max-height: 45vh !important;
     object-fit: contain !important;
   }
@@ -320,7 +362,7 @@ enhancedImages.slice(1).forEach((image, index) => {
       object-fit: contain !important;
     }
 
-    [data-image-id="16"] {
+    [data-image-id="15"] {
       width: calc(100vw - 1rem) !important;
       max-height: none !important;
     }
@@ -409,6 +451,91 @@ enhancedImages.slice(1).forEach((image, index) => {
     border-bottom: 3px solid rgba(238, 237, 226, 1);
     border-right: 3px solid rgba(238, 237, 226, 1);
   }
+
+  /* Caption Styles */
+  .caption-wrapper {
+    position: absolute;
+    z-index: 2;
+    pointer-events: none;
+    width: 40%;
+  }
+
+  .caption-wrapper.center {
+    bottom: 0rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+  }
+
+  .caption-wrapper.right {
+    top: 50%;
+    transform: translateX(-90%);
+    padding-right: 2rem;
+  }
+
+  .caption-wrapper.left {
+    top: 50%;
+    transform: translateX(170%);
+    padding-left: 2rem;
+  }
+
+  .image-caption {
+    font-family: 'Merriweather', serif;
+    color: rgb(238, 237, 226);
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.4;
+    opacity: 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    margin: 0;
+    transition: opacity 1.2s ease;
+  }
+
+  .image-caption.visible {
+    opacity: 0.9;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    .caption-wrapper {
+      position: static;
+      width: 100% !important;
+      text-align: center !important;
+      margin-top: 1rem;
+      padding: 0 1rem !important;
+      transform: none !important;
+    }
+  }
+
+  /* Add this to your style section */
+  .caption-wrapper-overlay {
+    position: absolute;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    z-index: 5;
+    pointer-events: none;
+    text-align: left;
+  }
+
+  .caption-wrapper-overlay .image-caption {
+    font-family: 'Merriweather', serif;
+    color: rgb(238, 237, 226);
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.4;
+    opacity: 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+    margin: 0;
+    transition: opacity 1.2s ease;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 0.5rem 0.8rem;
+    border-radius: 2px;
+  }
+
+  .caption-wrapper-overlay .image-caption.visible {
+    opacity: 0.95;
+  }
 </style>
 
 <script>
@@ -425,9 +552,34 @@ enhancedImages.slice(1).forEach((image, index) => {
     const handleIntersection = (entries, observer) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
+          // Get the photo section that contains this photo item
+          const photoSection = entry.target.closest('.photo-section');
+          const isImage06 = entry.target.dataset.imageId === "6"; // Check if it's image_06
+          
+          // First make the photo visible
           setTimeout(() => {
             entry.target.classList.add('visible');
+            
+            // Then animate the caption after 0.8 seconds
+            if (isImage06) {
+              // For image_06, find caption inside the photo-item
+              const caption = entry.target.querySelector('.image-caption');
+              if (caption) {
+                setTimeout(() => {
+                  caption.classList.add('visible');
+                }, 950);
+              }
+            } else if (photoSection) {
+              // For all other images, find caption in the photo-section
+              const caption = photoSection.querySelector('.caption-wrapper .image-caption');
+              if (caption) {
+                setTimeout(() => {
+                  caption.classList.add('visible');
+                }, 1100);
+              }
+            }
           }, 100);
+          
           observer.unobserve(entry.target);
         }
       });
