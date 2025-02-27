@@ -208,6 +208,7 @@ const captionTexts = [
     padding: 2rem;
   }
 
+  /* Position styles */
   .left { justify-content: flex-start; }
   .center { justify-content: center; }
   .right { justify-content: flex-end; }
@@ -306,29 +307,25 @@ const captionTexts = [
   /* Responsive Styles */
   @media (max-width: 768px) {
     .photo-grid {
-      gap: 6vh;
+      gap: 10vh;
     }
 
     .photo-section {
-      padding: 0.5rem;
-      min-height: auto;
+      min-height: 45vh !important;
+      padding: 1rem;
       justify-content: center !important;
+      width: 100%;
+      &.left, &.right, &.center {
+        justify-content: center !important;
+      }
     }
 
     .small, 
     .medium, 
     .large {
-      width: calc(100vw - 1rem) !important;
-      max-height: none !important;
-      margin: 0 auto;
+      width: calc(100vw - 2rem) !important;
+      max-width: none !important;
     }
-
-    .left, 
-    .right, 
-    .center {
-      justify-content: center !important;
-    }
-
 
     .hero-title {
       font-size: 1.2rem !important;
@@ -363,9 +360,39 @@ const captionTexts = [
     }
 
     [data-image-id="15"] {
-      width: calc(100vw - 1rem) !important;
+      width: calc(100vw - 2rem) !important;
       max-height: none !important;
     }
+
+    .caption-wrapper,
+    .caption-wrapper-overlay {
+      position: absolute;
+      left: 0 !important;
+      transform: none !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      background-color: rgba(0, 0, 0, 0.6);
+      border-radius: 0;
+      padding: 0.75rem 1rem;
+      z-index: 2;
+    }
+
+    .image-caption {
+      width: 100%;
+      text-align: center;
+      font-size: 0.9rem;
+      margin: 0;
+      padding: 0;
+    }
+
+      /* Special case for image_06 caption overlay */
+  .caption-wrapper-overlay {
+    bottom: -0.5rem;
+  }
+
+  .caption-wrapper-overlay .image-caption {
+    padding: 0 !important;
+  }
   }
 
   /* Add new text section styles */
@@ -452,70 +479,50 @@ const captionTexts = [
     border-right: 3px solid rgba(238, 237, 226, 1);
   }
 
-  /* Caption Styles */
+  /* Caption styles */
   .caption-wrapper {
     position: absolute;
+    max-width: 80%;
+    padding: 0.5rem 1rem;
     z-index: 2;
-    pointer-events: none;
-    width: 40%;
-  }
-
-  .caption-wrapper.center {
-    bottom: 0rem;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    text-align: center;
-  }
-
-  .caption-wrapper.right {
-    top: 50%;
-    transform: translateX(-90%);
-    padding-right: 2rem;
-  }
-
-  .caption-wrapper.left {
-    top: 50%;
-    transform: translateX(170%);
-    padding-left: 2rem;
   }
 
   .image-caption {
     font-family: 'Merriweather', serif;
-    color: rgb(238, 237, 226);
-    font-size: 1rem;
     font-weight: 300;
-    line-height: 1.4;
-    opacity: 0;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    margin: 0;
-    transition: opacity 1.2s ease;
+    font-size: 1rem;
+    color: rgb(238, 237, 226);
+    line-height: 1.5;
+    text-align: center;
   }
 
-  .image-caption.visible {
-    opacity: 0.9;
-  }
-
-  /* Mobile responsive */
+  /* Mobile styles - Full width photos with small margin */
   @media (max-width: 768px) {
     .caption-wrapper {
-      position: static;
-      width: 100% !important;
-      text-align: center !important;
-      margin-top: 1rem;
-      padding: 0 1rem !important;
-      transform: none !important;
+      position: absolute;
+      bottom: 1rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(0, 0, 0, 0.6);
+      border-radius: 4px;
+      padding: 0.5rem 1rem;
+      max-width: 90%;
+      width: auto;
     }
   }
 
-  /* Add this to your style section */
+  /* Special case for image_06 caption overlay */
   .caption-wrapper-overlay {
     position: absolute;
-    bottom: 1.5rem;
-    left: 1.5rem;
-    z-index: 5;
-    pointer-events: none;
-    text-align: left;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    max-width: 90%;
+    width: auto;
+    z-index: 2;
   }
 
   .caption-wrapper-overlay .image-caption {
