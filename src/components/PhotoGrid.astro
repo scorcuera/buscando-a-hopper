@@ -411,6 +411,7 @@ const captionTexts = [
     opacity: 0;
     transition: opacity 1s ease;
     z-index: 5;
+    cursor: pointer;
   }
 
   .scroll-arrow {
@@ -608,6 +609,11 @@ const captionTexts = [
       padding: 0 !important;
     }
   }
+
+  /* Add this to your existing styles */
+  .scroll-indicator:hover {
+    opacity: 0.8;
+  }
 </style>
 
 <script>
@@ -616,6 +622,7 @@ const captionTexts = [
     setupAnimations();
     setupTextAnimations();
     setupScrollIndicators();
+    setupArrowClicks();
   }
 
   function setupAnimations() {
@@ -763,6 +770,75 @@ const captionTexts = [
           }, 1000);
         }
       }, 1000);
+    }
+  }
+
+  // Add this new function to handle arrow clicks with a slower animation
+  function setupArrowClicks() {
+    // Select all scroll indicators
+    const scrollIndicators = document.querySelectorAll('.scroll-indicator');
+    
+    scrollIndicators.forEach(indicator => {
+      indicator.addEventListener('click', () => {
+        // Handle differently based on which indicator was clicked
+        if (indicator.classList.contains('first-indicator')) {
+          // First indicator - scroll to text section
+          const textSection = document.querySelector('.text-section');
+          if (textSection) {
+            smoothScrollTo(textSection, 1800); // Slower animation (1800ms)
+          }
+        } else if (indicator.classList.contains('second-indicator')) {
+          // Second indicator - directly find the first photo section after the text section
+          const textSection = document.querySelector('.text-section');
+          if (textSection) {
+            const nextSection = textSection.nextElementSibling;
+            if (nextSection) {
+              smoothScrollTo(nextSection, 1800); // Slower animation (1800ms)
+            }
+          }
+        } else {
+          // Any other indicators - find parent section and go to next
+          const currentSection = indicator.closest('.photo-section');
+          if (currentSection) {
+            const nextSection = currentSection.nextElementSibling;
+            if (nextSection) {
+              smoothScrollTo(nextSection, 1800); // Slower animation (1800ms)
+            }
+          }
+        }
+      });
+    });
+    
+    // Custom smooth scroll function with adjustable duration
+    function smoothScrollTo(element, duration) {
+      if (!element) return;
+      
+      const targetPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const startPosition = window.pageYOffset;
+      const distance = targetPosition - startPosition;
+      let startTime = null;
+      
+      function animation(currentTime) {
+        if (startTime === null) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const progress = Math.min(timeElapsed / duration, 1);
+        const ease = easeInOutCubic(progress);
+        
+        window.scrollTo(0, startPosition + distance * ease);
+        
+        if (timeElapsed < duration) {
+          requestAnimationFrame(animation);
+        }
+      }
+      
+      // Smooth easing function for natural feel
+      function easeInOutCubic(t) {
+        return t < 0.5 
+          ? 4 * t * t * t 
+          : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      }
+      
+      requestAnimationFrame(animation);
     }
   }
 
