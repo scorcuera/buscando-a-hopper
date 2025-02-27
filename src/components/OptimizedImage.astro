@@ -22,6 +22,15 @@ const height = isHero ? 1080 : 600;
 
 // Higher quality for hero, lower for regular images
 const quality = isHero ? 85 : 60;
+
+// Add structured data for images
+const imageSchema = {
+  "@context": "https://schema.org/",
+  "@type": "ImageObject",
+  "contentUrl": src,
+  "name": alt,
+  "description": alt  // Consider adding more descriptive alt text
+};
 ---
 
 <div class="image-wrapper">
@@ -108,4 +117,6 @@ const quality = isHero ? 85 : 60;
       img.onload = setupImageLoaded;
     }
   });
-</script> 
+</script>
+
+<script type="application/ld+json" set:html={JSON.stringify(imageSchema)} /> 
