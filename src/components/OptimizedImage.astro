@@ -42,7 +42,7 @@ const quality = isHero ? 85 : 60;
       height={height} 
       loading={loading} 
       decoding="sync"
-      class="hero-img" 
+      class={loading === "eager" ? "hero-img" : ""}
     />
   ) : (
     <Image
