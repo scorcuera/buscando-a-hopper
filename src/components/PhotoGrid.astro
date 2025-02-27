@@ -386,13 +386,18 @@ const captionTexts = [
     }
 
       /* Special case for image_06 caption overlay */
-  .caption-wrapper-overlay {
-    bottom: -0.5rem;
-  }
+    .caption-wrapper-overlay {
+      bottom: -0.5rem;
+    }
 
-  .caption-wrapper-overlay .image-caption {
-    padding: 0 !important;
-  }
+    .caption-wrapper-overlay .image-caption {
+      padding: 0 !important;
+    }
+
+    [data-image-id="15"] + .caption-wrapper {
+      bottom: -3rem !important;
+    }
+
   }
 
   /* Add new text section styles */
@@ -503,7 +508,7 @@ const captionTexts = [
       bottom: 1rem;
       left: 50%;
       transform: translateX(-50%);
-      background-color: rgba(0, 0, 0, 0.6);
+      background-color: black;
       border-radius: 4px;
       padding: 0.5rem 1rem;
       max-width: 90%;
