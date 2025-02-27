@@ -208,7 +208,6 @@ const captionTexts = [
     padding: 2rem;
   }
 
-  /* Position styles */
   .left { justify-content: flex-start; }
   .center { justify-content: center; }
   .right { justify-content: flex-end; }
@@ -307,25 +306,29 @@ const captionTexts = [
   /* Responsive Styles */
   @media (max-width: 768px) {
     .photo-grid {
-      gap: 10vh;
+      gap: 6vh;
     }
 
     .photo-section {
-      min-height: 45vh !important;
-      padding: 1rem;
+      padding: 0.5rem;
+      min-height: auto;
       justify-content: center !important;
-      width: 100%;
-      &.left, &.right, &.center {
-        justify-content: center !important;
-      }
     }
 
     .small, 
     .medium, 
     .large {
-      width: calc(100vw - 2rem) !important;
-      max-width: none !important;
+      width: calc(100vw - 1rem) !important;
+      max-height: none !important;
+      margin: 0 auto;
     }
+
+    .left, 
+    .right, 
+    .center {
+      justify-content: center !important;
+    }
+
 
     .hero-title {
       font-size: 1.2rem !important;
@@ -360,44 +363,9 @@ const captionTexts = [
     }
 
     [data-image-id="15"] {
-      width: calc(100vw - 2rem) !important;
+      width: calc(100vw - 1rem) !important;
       max-height: none !important;
     }
-
-    .caption-wrapper,
-    .caption-wrapper-overlay {
-      position: absolute;
-      left: 0 !important;
-      transform: none !important;
-      width: 100% !important;
-      max-width: 100% !important;
-      background-color: rgba(0, 0, 0, 0.6);
-      border-radius: 0;
-      padding: 0.75rem 1rem;
-      z-index: 2;
-    }
-
-    .image-caption {
-      width: 100%;
-      text-align: center;
-      font-size: 0.9rem;
-      margin: 0;
-      padding: 0;
-    }
-
-      /* Special case for image_06 caption overlay */
-    .caption-wrapper-overlay {
-      bottom: -0.5rem;
-    }
-
-    .caption-wrapper-overlay .image-caption {
-      padding: 0 !important;
-    }
-
-    [data-image-id="15"] + .caption-wrapper {
-      bottom: -3rem !important;
-    }
-
   }
 
   /* Add new text section styles */
@@ -484,50 +452,110 @@ const captionTexts = [
     border-right: 3px solid rgba(238, 237, 226, 1);
   }
 
-  /* Caption styles */
+  /* Caption Styles */
   .caption-wrapper {
     position: absolute;
-    max-width: 80%;
-    padding: 0.5rem 1rem;
     z-index: 2;
+    pointer-events: none;
+    width: 40%;
+  }
+
+  .caption-wrapper.center {
+    bottom: 0rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    text-align: center;
+  }
+
+  .caption-wrapper.right {
+    top: 50%;
+    transform: translateX(-90%);
+    padding-right: 2rem;
+  }
+
+  .caption-wrapper.left {
+    top: 50%;
+    transform: translateX(170%);
+    padding-left: 2rem;
   }
 
   .image-caption {
     font-family: 'Merriweather', serif;
-    font-weight: 300;
-    font-size: 1rem;
     color: rgb(238, 237, 226);
-    line-height: 1.5;
-    text-align: center;
+    font-size: 1rem;
+    font-weight: 300;
+    line-height: 1.4;
+    opacity: 0;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    margin: 0;
+    transition: opacity 1.2s ease;
   }
 
-  /* Mobile styles - Full width photos with small margin */
+  .image-caption.visible {
+    opacity: 0.9;
+  }
+
+  /* Mobile responsive */
   @media (max-width: 768px) {
-    .caption-wrapper {
-      position: absolute;
-      bottom: 1rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: black;
-      border-radius: 4px;
-      padding: 0.5rem 1rem;
-      max-width: 90%;
-      width: auto;
+    .caption-wrapper,
+    .caption-wrapper-overlay {
+      position: relative !important;
+      bottom: auto !important;
+      left: auto !important;
+      right: auto !important;
+      top: auto !important;
+      width: 100% !important;
+      text-align: center !important;
+      margin-top: 0.5rem !important;
+      padding: 0 0.5rem !important;
+      transform: none !important;
+      display: block !important;
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+    
+    .caption-wrapper.visible,
+    .caption-wrapper-overlay.visible {
+      opacity: 1;
+    }
+    
+    /* Ensure photos take full width */
+    .photo-item {
+      width: 100vw !important;
+      max-width: 100vw !important;
+      margin: 0 auto !important;
+      padding: 0 !important;
+      display: flex !important;
+      flex-direction: column !important;
+    }
+    
+    /* Fix spacing between photo sections */
+    .photo-section {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      margin-bottom: 8rem !important;
+    }
+    
+    /* Special fix for image 6 */
+    [data-image-id="6"] .caption-wrapper-overlay {
+      position: relative !important;
+      bottom: auto !important;
+      left: auto !important;
+      margin-top: 0.5rem !important;
+      background-color: transparent !important;
     }
   }
 
-  /* Special case for image_06 caption overlay */
+  /* Add this to your style section */
   .caption-wrapper-overlay {
     position: absolute;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.6);
-    border-radius: 4px;
-    padding: 0.5rem 1rem;
-    max-width: 90%;
-    width: auto;
-    z-index: 2;
+    bottom: 1.5rem;
+    left: 1.5rem;
+    z-index: 5;
+    pointer-events: none;
+    text-align: left;
   }
 
   .caption-wrapper-overlay .image-caption {
@@ -547,6 +575,38 @@ const captionTexts = [
 
   .caption-wrapper-overlay .image-caption.visible {
     opacity: 0.95;
+  }
+
+  /* Mobile responsive */
+  @media (max-width: 768px) {
+    /* Only apply these overrides on mobile */
+    [data-image-id="6"] .caption-wrapper-overlay {
+      position: relative !important;
+      bottom: auto !important;
+      left: auto !important;
+      right: auto !important;
+      top: auto !important;
+      width: 100% !important;
+      text-align: center !important;
+      margin-top: 0.5rem !important;
+      padding: 0 0.5rem !important;
+      transform: none !important;
+      display: block !important;
+      opacity: 0;
+      transition: opacity 1s ease;
+      background-color: transparent !important;
+    }
+    
+    [data-image-id="6"] .caption-wrapper-overlay.visible {
+      opacity: 1;
+    }
+    
+    [data-image-id="6"] .caption-wrapper-overlay .image-caption {
+      width: 100% !important;
+      text-align: center !important;
+      background-color: transparent !important;
+      padding: 0 !important;
+    }
   }
 </style>
 
@@ -572,21 +632,27 @@ const captionTexts = [
           setTimeout(() => {
             entry.target.classList.add('visible');
             
-            // Then animate the caption after 0.8 seconds
+            // Then animate the caption after a delay
             if (isImage06) {
               // For image_06, find caption inside the photo-item
               const caption = entry.target.querySelector('.image-caption');
+              const captionWrapper = entry.target.querySelector('.caption-wrapper-overlay');
+              
               if (caption) {
                 setTimeout(() => {
                   caption.classList.add('visible');
+                  if (captionWrapper) captionWrapper.classList.add('visible');
                 }, 950);
               }
             } else if (photoSection) {
-              // For all other images, find caption in the photo-section
-              const caption = photoSection.querySelector('.caption-wrapper .image-caption');
+              // For other images, find caption in the photo section
+              const captionWrapper = photoSection.querySelector('.caption-wrapper, .caption-wrapper-overlay');
+              const caption = photoSection.querySelector('.caption-wrapper .image-caption, .caption-wrapper-overlay .image-caption');
+              
               if (caption) {
                 setTimeout(() => {
                   caption.classList.add('visible');
+                  if (captionWrapper) captionWrapper.classList.add('visible');
                 }, 1100);
               }
             }
