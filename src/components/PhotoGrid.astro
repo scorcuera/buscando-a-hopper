@@ -167,6 +167,13 @@ enhancedImages.forEach((image, index) => {
       </div>
     );
   })}
+
+  {/* Add "Sobre el creador" button after the last photo */}
+  <div class="creator-link-section">
+    <a href="/sobre-mi" class="creator-link">
+      <span>sobre el creador</span>
+    </a>
+  </div>
 </div>
 
 <style>
@@ -718,6 +725,47 @@ enhancedImages.forEach((image, index) => {
       padding: 0 1rem;
     }
   }
+
+  /* Creator link styling */
+  .creator-link-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 1vh 0 !important;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+  }
+
+  .creator-link-section.visible {
+    opacity: 1;
+  }
+
+  .creator-link {
+    font-family: 'Merriweather', serif;
+    color: #E5C100;
+    text-decoration: none;
+    font-size: 1.3rem;
+    padding: 0.8rem 2rem;
+    border: 1px solid #E5C100;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .creator-link:hover {
+    background-color: rgba(229, 193, 0, 0.1);
+  }
+
+  @media (max-width: 768px) {
+    .creator-link-section {
+      margin: 1vh 0 !important;
+    }
+    
+    .creator-link {
+      font-size: 1.1rem;
+      padding: 0.7rem 1.5rem;
+    }
+  }
 </style>
 
 <script>
@@ -731,6 +779,10 @@ enhancedImages.forEach((image, index) => {
 
   function setupAnimations() {
     const items = Array.from(document.querySelectorAll('.photo-item'));
+    const creatorLinkSection = document.querySelector('.creator-link-section');
+    
+    // Track if we've seen the last photo item
+    let lastPhotoItemSeen = false;
     
     const handleIntersection = (entries, observer) => {
       entries.forEach(entry => {
@@ -739,6 +791,9 @@ enhancedImages.forEach((image, index) => {
           const photoSection = entry.target.closest('.photo-section');
           const isImage06 = entry.target.dataset.imageId === "6"; // Check if it's image_06
           const isVariant = entry.target.classList.contains('variant-item'); // Check if it's a variant
+          
+          // Check if this is the last photo item
+          const isLastItem = entry.target === items[items.length - 1];
           
           // First make the photo visible
           setTimeout(() => {
@@ -766,6 +821,14 @@ enhancedImages.forEach((image, index) => {
                 setTimeout(() => {
                   caption.classList.add('visible');
                   if (captionWrapper) captionWrapper.classList.add('visible');
+                  
+                  // If this is the last item and its caption is now visible, show the creator link
+                  if (isLastItem && creatorLinkSection) {
+                    lastPhotoItemSeen = true;
+                    setTimeout(() => {
+                      creatorLinkSection.classList.add('visible');
+                    }, 1200);
+                  }
                 }, 1100);
               }
             }
