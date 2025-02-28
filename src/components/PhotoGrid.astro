@@ -1,14 +1,53 @@
 ---
 import { getImages } from '../utils/images';
 import OptimizedImage from './OptimizedImage.astro';
+import SeoTextComponent from './SeoTextComponent.astro';
 
-const enhancedImages = await getImages();
+const allImages = await getImages();
 
-// First image is still the hero
-enhancedImages[0].position = 'center';
-enhancedImages[0].size = 'hero';
+// Separate the hero image
+const heroImage = allImages[0];
+heroImage.position = 'center';
+heroImage.size = 'hero';
 
-// Set specific size and position for each remaining image
+// Get the rest of the images (excluding hero)
+const enhancedImages = allImages.slice(1);
+
+// Caption texts for each primary image
+const captionTexts = [
+  "lo busqué en los que esperan",        // img_01 (index 0)
+  "y en los que rezan",                   // img_02 (index 1)
+  "a última hora, en el mercado",           // img_03 (index 2)
+  "y a primera, en exámenes",       // img_04 (index 3)
+  "lo busqué en los que llegan puntuales",             // img_05 (index 4)
+  "y en los noctámbulos",               // img_06 (index 5)
+  "en los restos de fantasmas",     // img_07 (index 6)
+  "y en las primeras ideas",   // img_08 (index 7)
+  "lo busqué de camino al trabajo",              // img_09 (index 8)
+  "y de vuelta a casa",                // img_10 (index 9)
+  "en los juegos de pelota",                     // img_11 (index 10)
+  "y en los de manos",            // img_12 (index 11)
+  "lo busqué en los soñadores",         // img_13 (index 12)
+  "y también en sus noches",                   // img_14 (index 13)
+  "tal vez en un domingo de otoño",                      // img_15 (index 14)
+  "o en uno de invierno",                // img_16 (index 15)
+  "me asomé a los portales dimensionales", // img_17 (index 16)
+  "y a los liminales",                      // img_18 (index 17)
+  "lo busqué en los que se quedaron",                // img_19 (index 18)
+  "y en los que se fueron"                           // img_20 (index 19)
+];
+
+// NEW: Caption texts for variant images with Hopper painting references
+const variantCaptionTexts = {
+  "01b": "<i>Office in a Small City</i> (1953)",
+  "04b": "<i>New York Movie</i> (1939)",
+  "08b": "<i>Cape Cod Morning</i> (1950)",
+  "13b": "<i>Compartment C</i> (1938)",
+  "16b": "<i>Rooms by the Sea</i> (1951)",
+  "19b": "<i>House by the Railroad</i> (1925)"
+};
+
+// Set specific size and position for each image
 const imageLayout = [
   { size: 'large', position: 'center' },  // img_01
   { size: 'medium', position: 'right' },  // img_02
@@ -32,37 +71,15 @@ const imageLayout = [
   { size: 'small', position: 'left' }    // img_20
 ];
 
-// Apply the layout to each image after the hero
-enhancedImages.slice(1).forEach((image, index) => {
-  if (index < imageLayout.length) {
-    image.size = imageLayout[index].size;
-    image.position = imageLayout[index].position;
+// Apply layouts to primary images (skip variants as they're always centered)
+let primaryImageIndex = 0;
+enhancedImages.forEach((image, index) => {
+  if (!image.isVariant && primaryImageIndex < imageLayout.length) {
+    image.size = imageLayout[primaryImageIndex].size;
+    image.position = imageLayout[primaryImageIndex].position;
+    primaryImageIndex++;
   }
 });
-
-// Add text captions array matching the image layout
-const captionTexts = [
-  "lo busqué en los que esperan",        // img_01 (index 0)
-  "y en los que rezan",                   // img_02 (index 1)
-  "a última hora, en el mercado",           // img_03 (index 2)
-  "y a primera, en exámenes",       // img_04 (index 3)
-  "lo busqué en los que llegan puntuales",             // img_05 (index 4)
-  "y en los noctámbulos",               // img_06 (index 5)
-  "en los restos de fantasmas",     // img_07 (index 6)
-  "y en las primeras ideas",   // img_08 (index 7)
-  "lo busqué de camino al trabajo",              // img_09 (index 8)
-  "y de vuelta a casa",                // img_10 (index 9)
-  "en los juegos de pelota",                     // img_11 (index 10)
-  "y en los de manos",            // img_12 (index 11)
-  "lo busqué en los soñadores",         // img_13 (index 12)
-  "y también en sus noches",                   // img_14 (index 13)
-  "tal vez en un domingo de otoño",                      // img_15 (index 14)
-  "o en uno de invierno",                // img_16 (index 15)
-  "me asomé a los portales dimensionales", // img_17 (index 16)
-  "y a los liminales",                      // img_18 (index 17)
-  "lo busqué en los que se quedaron",                // img_19 (index 18)
-  "y en los que se fueron"                           // img_20 (index 19)
-];
 ---
 
 <div class="photo-grid">
@@ -71,8 +88,8 @@ const captionTexts = [
     <div class="photo-item hero" data-image-id={0}>
       <div class="hero-overlay" />
       <OptimizedImage
-        src={enhancedImages[0].src}
-        alt={enhancedImages[0].alt}
+        src={heroImage.src}
+        alt={heroImage.alt}
         loading="eager"
       />
       <h1 class="hero-title">buscando a Hopper</h1>
@@ -97,13 +114,38 @@ const captionTexts = [
   </div>
 
   {/* Rest of the images */}
-  {enhancedImages.slice(1).map((image, index) => {
-    const caption = captionTexts[index];
-    const isImage06 = index === 5; // img_06 is at index 5 (6th image after hero)
+  {enhancedImages.map((image, index) => {
+    // For variant images, include captions for Hopper paintings
+    if (image.isVariant) {
+      const variantId = `${image.variantOf}b`;
+      const caption = variantCaptionTexts[variantId] || "";
+      
+      return (
+        <div class={`photo-section center variant-section`}>
+          <div class={`photo-item variant-item`} data-image-id={variantId}>
+            <OptimizedImage
+              src={image.src}
+              alt={image.alt}
+              loading="lazy"
+            />
+          </div>
+          {/* Add caption for variant images */}
+          <div class="caption-wrapper center variant-caption">
+            <p class="image-caption" set:html={caption} />
+          </div>
+        </div>
+      );
+    }
+    
+    // For primary images, proceed as before
+    // Calculate caption index (accounting for variant images that were added)
+    const captionIndex = primaryImageIndex = enhancedImages.slice(0, index).filter(img => !img.isVariant).length;
+    const caption = captionTexts[captionIndex] || "";
+    const isImage06 = image.id === "06"; // Special case for img_06
     
     return (
       <div class={`photo-section ${image.position}`}>
-        <div class={`photo-item ${image.size}`} data-image-id={index + 1}>
+        <div class={`photo-item ${image.size}`} data-image-id={image.id}>
           <OptimizedImage
             src={image.src}
             alt={image.alt}
@@ -116,14 +158,14 @@ const captionTexts = [
             </div>
           )}
         </div>
-        {/* Regular caption for all other images */}
+        {/* Regular caption for all other primary images */}
         {!isImage06 && (
           <div class={`caption-wrapper ${image.position}`}>
             <p class="image-caption">{caption}</p>
           </div>
         )}
       </div>
-    )
+    );
   })}
 </div>
 
@@ -613,6 +655,63 @@ const captionTexts = [
   /* Add this to your existing styles */
   .scroll-indicator:hover {
     opacity: 0.8;
+  }
+
+  /* Add styles for variant images */
+  .variant-section {
+    margin: 10vh 0;
+  }
+  
+  .variant-item {
+    width: 50%;
+    margin: 0 auto;
+  }
+  
+  /* Special styling just for img_13b */
+  [data-image-id="13b"] {
+    max-height: 90vh; /* Reduce height for desktop */
+  }
+
+  [data-image-id="13b"] img {
+    object-fit: contain;
+    max-height: 100%;
+  }
+
+  @media (max-width: 768px) {
+    .variant-item {
+      width: 100vw !important;
+      max-width: 100vw !important;
+      margin: 0 auto !important;
+    }
+    
+    /* Mobile-specific height reduction for img_13b */
+    [data-image-id="13b"] {
+      max-height: 60vh !important; /* Even shorter on mobile */
+    }
+    
+    [data-image-id="13b"] img {
+      object-fit: contain;
+      max-height: 60vh !important;
+    }
+  }
+
+  /* Add variant caption styling */
+  .variant-caption {
+    margin-top: 1rem;
+    width: 50%;  /* Match the width of variant images */
+  }
+  
+  .variant-caption .image-caption {
+    font-size: 0.9rem;
+    opacity: 0.75;
+    text-align: center;
+  }
+  
+  @media (max-width: 768px) {
+    .variant-caption {
+      width: 100% !important;
+      padding: 0 1rem;
+    }
   }
 </style>
 
