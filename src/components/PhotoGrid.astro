@@ -731,7 +731,7 @@ enhancedImages.forEach((image, index) => {
     width: 100%;
     display: flex;
     justify-content: center;
-    margin: 1vh 0 !important;
+    margin-top: -20vh !important; /* Negative margin to pull it closer to the last photo */
     opacity: 0;
     transition: opacity 1.5s ease;
   }
@@ -758,7 +758,7 @@ enhancedImages.forEach((image, index) => {
 
   @media (max-width: 768px) {
     .creator-link-section {
-      margin: 1vh 0 !important;
+      margin-top: -10vh !important; /* Less aggressive on mobile */
     }
     
     .creator-link {
