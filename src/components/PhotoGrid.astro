@@ -703,8 +703,13 @@ enhancedImages.forEach((image, index) => {
   
   .variant-caption .image-caption {
     font-size: 0.9rem;
-    opacity: 0.75;
+    opacity: 0; /* Start invisible */
     text-align: center;
+    transition: opacity 0.8s ease; /* Add transition for fade effect */
+  }
+  
+  .variant-caption .image-caption.visible {
+    opacity: 0.75; /* Fade to this opacity when visible */
   }
   
   @media (max-width: 768px) {
@@ -733,6 +738,7 @@ enhancedImages.forEach((image, index) => {
           // Get the photo section that contains this photo item
           const photoSection = entry.target.closest('.photo-section');
           const isImage06 = entry.target.dataset.imageId === "6"; // Check if it's image_06
+          const isVariant = entry.target.classList.contains('variant-item'); // Check if it's a variant
           
           // First make the photo visible
           setTimeout(() => {
@@ -752,8 +758,9 @@ enhancedImages.forEach((image, index) => {
               }
             } else if (photoSection) {
               // For other images, find caption in the photo section
-              const captionWrapper = photoSection.querySelector('.caption-wrapper, .caption-wrapper-overlay');
-              const caption = photoSection.querySelector('.caption-wrapper .image-caption, .caption-wrapper-overlay .image-caption');
+              // Updated selector to also target variant captions
+              const captionWrapper = photoSection.querySelector('.caption-wrapper, .caption-wrapper-overlay, .variant-caption');
+              const caption = photoSection.querySelector('.caption-wrapper .image-caption, .caption-wrapper-overlay .image-caption, .variant-caption .image-caption');
               
               if (caption) {
                 setTimeout(() => {
