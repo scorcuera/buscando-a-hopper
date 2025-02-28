@@ -4,7 +4,7 @@ export function getImages() {
   
   // Descriptive alt texts that include the main keyword
   const altTexts = [
-    "buscando a Hopper - Portada del proyecto fotográfico",
+    "Office in a Small City, de Edward Hopper",
     "buscando a Hopper - Escena urbana con luces de noche",
     "buscando a Hopper - Café iluminado en la oscuridad",
     "buscando a Hopper - Soledad y luz en ambiente nocturno",
