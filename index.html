@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting to www.buscando-a-hopper.com</title>
+  <script>
+    // Force redirect to www version
+    if (window.location.hostname === 'buscando-a-hopper.com' || 
+        window.location.hostname === 'buscand-a-hopper.com') { // Catch typo domains
+      window.location.replace('https://www.buscando-a-hopper.com' + window.location.pathname);
+    }
+  </script>
+  <meta http-equiv="refresh" content="0;url=https://www.buscando-a-hopper.com/">
+</head>
+<body>
+  <p>Redirecting to <a href="https://www.buscando-a-hopper.com/">www.buscando-a-hopper.com</a>...</p>
+</body>
+</html> 

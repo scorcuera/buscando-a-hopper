@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Page not found | buscando a Hopper</title>
+  <script>
+    // Redirect non-www to www
+    if (window.location.hostname === 'buscando-a-hopper.com') {
+      window.location.href = 'https://www.buscando-a-hopper.com' + window.location.pathname + window.location.search;
+    }
+  </script>
+  <style>
+    body { font-family: 'Merriweather', serif; text-align: center; padding: 50px; background: #f8f8f8; }
+    h1 { color: #333; }
+    a { color: #E5C100; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>Página no encontrada</h1>
+  <p>Lo sentimos, pero la página que buscas no existe.</p>
+  <p><a href="https://www.buscando-a-hopper.com">Volver al inicio</a></p>
+</body>
+</html> 

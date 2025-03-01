@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteCond %{HTTP_HOST} !^www\.buscando-a-hopper\.com$ [NC]
+RewriteRule ^(.*)$ https://www.buscando-a-hopper.com/$1 [L,R=301] 

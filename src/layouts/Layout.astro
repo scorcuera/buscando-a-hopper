@@ -3,12 +3,10 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" type="image/x-icon" href="/favicon.ico" />
-		<link rel="shortcut icon" href="/favicon.ico" />
 		
-		<!-- Add an Apple touch icon (optional) -->
-		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+		<!-- Update favicon links - add ICO file first for better search engine recognition -->
+		<link rel="icon" type="image/x-icon" href="/favicon.ico">
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		
 		<!-- SEO Meta Tags -->
 		<meta name="description" content="buscando a Hopper: una exploración fotográfica de la soledad" />
@@ -35,6 +33,17 @@
 		<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400&display=swap" rel="stylesheet">
 		<meta name="generator" content={Astro.generator} />
 		<title>buscando a Hopper</title>
+		<link rel="canonical" href="https://www.buscando-a-hopper.com/" />
+		
+		<!-- Apple Touch Icon -->
+		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+		
+		<!-- Additional favicon formats -->
+		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+		
+		<!-- Web App Manifest -->
+		<link rel="manifest" href="/site.webmanifest">
 	</head>
 	<body>
 		<slot />
@@ -104,5 +113,19 @@
   "artform": "Photography",
   "description": "una exploración fotográfica de la soledad",
   "url": "https://www.buscando-a-hopper.com"
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "buscando a Hopper",
+  "url": "https://www.buscando-a-hopper.com",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://www.buscando-a-hopper.com/?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
 }
 </script>
