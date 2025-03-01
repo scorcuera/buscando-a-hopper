@@ -5,11 +5,11 @@ export function getImages() {
   // Descriptive alt texts that include the main keyword
   const altTexts = [
     "Office in a Small City, de Edward Hopper",
-    "buscando a Hopper - Escena urbana con luces de noche",
-    "buscando a Hopper - Café iluminado en la oscuridad",
-    "buscando a Hopper - Soledad y luz en ambiente nocturno",
-    "buscando a Hopper - Juego de luces en arquitectura urbana",
-    "buscando a Hopper - Perspectiva de calle vacía",
+    "New York Movie, de Edward Hopper",
+    "Cape Cod Morning, de Edward Hopper",
+    "Compartment C, de Edward Hopper",
+    "Rooms by the Sea, de Edward Hopper",
+    "House by the Railroad, de Edward Hopper",
     // ...add more descriptive alt texts for remaining images
   ];
   
